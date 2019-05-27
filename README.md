@@ -1,2 +1,2 @@
 # coordinates
-Web service that converts Euclidian coordinates to polar coordinates.
+Web service that converts Cartesian coordinates to polar coordinates.
