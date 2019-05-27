@@ -1,11 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/davidharting/coordinates/coordinates"
 	"github.com/gorilla/mux"
 )
 
@@ -15,11 +17,21 @@ func getPolarCoordinates(w http.ResponseWriter, r *http.Request) {
 	y, errY := strconv.ParseFloat(v.Get("y"), 64)
 
 	if errX != nil || errY != nil {
+		w.WriteHeader(400)
 		fmt.Fprintf(w, "Must provide query params X and Y, which must be numbers.")
-	} else {
-		fmt.Fprintf(w, "Okay then you sent us (%v, %v)", x, y)
+		return
 	}
 
+	cartesian := coordinates.CartesianPair{X: x, Y: y}
+	polar := cartesian.Convert()
+	response, err := json.Marshal(polar)
+
+	if err != nil {
+		w.WriteHeader(500)
+		fmt.Print("Server error")
+	}
+
+	fmt.Fprint(w, string(response))
 }
 
 func main() {
